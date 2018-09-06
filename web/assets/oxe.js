@@ -2,6 +2,148 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+function _invokeIgnored(body) {
+	var result = body();if (result && result.then) {
+		return result.then(_empty);
+	}
+}function _continueIgnored(value) {
+	if (value && value.then) {
+		return value.then(_empty);
+	}
+}function _for(test, update, body) {
+	var stage;for (;;) {
+		var shouldContinue = test();if (_isSettledPact(shouldContinue)) {
+			shouldContinue = shouldContinue.__value;
+		}if (!shouldContinue) {
+			return result;
+		}if (shouldContinue.then) {
+
+			stage = 0;break;
+		}var result = body();if (result && result.then) {
+			if (_isSettledPact(result)) {
+				result = result.__state;
+			} else {
+				stage = 1;break;
+			}
+		}if (update) {
+			var updateValue = update();if (updateValue && updateValue.then && !_isSettledPact(updateValue)) {
+				stage = 2;break;
+			}
+		}
+	}var pact = new _Pact();var reject = _settle.bind(null, pact, 2);(stage === 0 ? shouldContinue.then(_resumeAfterTest) : stage === 1 ? result.then(_resumeAfterBody) : updateValue.then(_resumeAfterUpdate)).then(void 0, reject);return pact;function _resumeAfterBody(value) {
+		result = value;do {
+			if (update) {
+				updateValue = update();if (updateValue && updateValue.then && !_isSettledPact(updateValue)) {
+					updateValue.then(_resumeAfterUpdate).then(void 0, reject);return;
+				}
+			}shouldContinue = test();
+			if (!shouldContinue || _isSettledPact(shouldContinue) && !shouldContinue.__value) {
+				_settle(pact, 1, result);return;
+			}if (shouldContinue.then) {
+				shouldContinue.then(_resumeAfterTest).then(void 0, reject);return;
+			}result = body();if (_isSettledPact(result)) {
+				result = result.__value;
+			}
+		} while (!result || !result.then);result.then(_resumeAfterBody).then(void 0, reject);
+	}function _resumeAfterTest(shouldContinue) {
+		if (shouldContinue) {
+			result = body();if (result && result.then) {
+				result.then(_resumeAfterBody).then(void 0, reject);
+			} else {
+				_resumeAfterBody(result);
+			}
+		} else {
+			_settle(pact, 1, result);
+		}
+	}function _resumeAfterUpdate() {
+		if (shouldContinue = test()) {
+			if (shouldContinue.then) {
+				shouldContinue.then(_resumeAfterTest).then(void 0, reject);
+			} else {
+				_resumeAfterTest(shouldContinue);
+			}
+		} else {
+			_settle(pact, 1, result);
+		}
+	}
+}function _isSettledPact(thenable) {
+	return thenable instanceof _Pact && thenable.__state === 1;
+}var _Pact = function () {
+	function _Pact() {}_Pact.prototype.then = function (onFulfilled, onRejected) {
+		var state = this.__state;if (state) {
+			var callback = state == 1 ? onFulfilled : onRejected;
+			if (callback) {
+				var _result5 = new _Pact();try {
+					_settle(_result5, 1, callback(this.__value));
+				} catch (e) {
+					_settle(_result5, 2, e);
+				}return _result5;
+			} else {
+				return this;
+			}
+		}
+
+		var result = new _Pact();this.__observer = function (_this) {
+			try {
+				var value = _this.__value;if (_this.__state == 1) {
+					_settle(result, 1, onFulfilled ? onFulfilled(value) : value);
+				} else if (onRejected) {
+					_settle(result, 1, onRejected(value));
+				} else {
+					_settle(result, 2, value);
+				}
+			} catch (e) {
+				_settle(result, 2, e);
+			}
+		};return result;
+	};return _Pact;
+}();function _settle(pact, state, value) {
+	if (!pact.__state) {
+		if (value instanceof _Pact) {
+			if (value.__state) {
+				if (state === 1) {
+					state = value.__state;
+				}
+				value = value.__value;
+			} else {
+				value.__observer = _settle.bind(null, pact, state);return;
+			}
+		}if (value && value.then) {
+			value.then(_settle.bind(null, pact, state), _settle.bind(null, pact, 2));return;
+		}pact.__state = state;pact.__value = value;var observer = pact.__observer;if (observer) {
+			observer(pact);
+		}
+	}
+}var _async = function () {
+	try {
+		if (isNaN.apply(null, {})) {
+			return function (f) {
+				return function () {
+					try {
+						return Promise.resolve(f.apply(this, arguments));
+					} catch (e) {
+						return Promise.reject(e);
+					}
+				};
+			};
+		}
+	} catch (e) {}return function (f) {
+		// Pre-ES5.1 JavaScript runtimes don't accept array-likes in Function.apply
+		return function () {
+			var args = [];for (var i = 0; i < arguments.length; i++) {
+				args[i] = arguments[i];
+			}try {
+				return Promise.resolve(f.apply(this, args));
+			} catch (e) {
+				return Promise.reject(e);
+			}
+		};
+	};
+}();function _awaitIgnored(value, direct) {
+	if (!direct) {
+		return Promise.resolve(value).then(_empty);
+	}
+}function _empty() {}
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -491,8 +633,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				if (!path) continue;
 
-				path = path.replace(/\s*\|.*/, '');
-				var name = path.split('.').slice(-1);
+				path = path.replace(/\s*\|.*/, '');var name = path.split('.').slice(-1);
 
 				data[name] = this.getByPath(model, path);
 			}
@@ -614,16 +755,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		// 	// console.warn('Oxe.utility - could not find container scope');
 		// },
 
+		// ready () {
+		// 	return new Promise(function (resolve) {
+		// 		if (window.document.readyState !== 'interactive' && window.document.readyState !== 'complete') {
+		// 			window.document.addEventListener('DOMContentLoaded', resolve, true);
+		// 		} else {
+		// 			resolve();
+		// 		}
+		// 	});
+		// }
 		ready: function ready(callback) {
-			if (callback) {
-				if (window.document.readyState !== 'interactive' && window.document.readyState !== 'complete') {
-					window.document.addEventListener('DOMContentLoaded', function _() {
-						callback();
-						window.document.removeEventListener('DOMContentLoaded', _);
-					}, true);
-				} else {
-					callback();
-				}
+			callback = Wraper(callback);
+			if (window.document.readyState !== 'interactive' && window.document.readyState !== 'complete') {
+				window.document.addEventListener('DOMContentLoaded', callback, true);
+			} else {
+				callback();
 			}
 		}
 	};
@@ -799,7 +945,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		return Batcher;
 	}(Events);
 
-	function Wraper(action, complete) {
+	function Wraper$1(action, complete) {
 
 		if (action && action.constructor.name === 'AsyncFunction') {
 
@@ -924,7 +1070,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					};
 
 					if (self.response) {
-						Wraper(self.response.bind(null, opt), function (result) {
+						Wraper$1(self.response.bind(null, opt), function (result) {
 							if (result !== false) {
 								end();
 							}
@@ -1044,7 +1190,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				};
 
 				if (self.request) {
-					Wraper(self.request.bind(null, opt), function (result) {
+					Wraper$1(self.request.bind(null, opt), function (result) {
 						if (result !== false) {
 							end();
 						}
@@ -1131,101 +1277,131 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 		_createClass(Router, [{
 			key: 'setup',
-			value: function setup(options) {
+			value: _async(function (options) {
+				var _this3 = this;
+
 				options = options || {};
 
-				this.auth = options.auth === undefined ? this.auth : options.auth;
-				this.element = options.element === undefined ? this.element : options.element;
-				this.contain = options.contain === undefined ? this.contain : options.contain;
-				this.external = options.external === undefined ? this.external : options.external;
+				_this3.auth = options.auth === undefined ? _this3.auth : options.auth;
+				_this3.element = options.element === undefined ? _this3.element : options.element;
+				_this3.contain = options.contain === undefined ? _this3.contain : options.contain;
+				_this3.external = options.external === undefined ? _this3.external : options.external;
 
 				if (options.routes) {
-					this.add(options.routes);
+					_this3.add(options.routes);
 				}
 
-				this.route(window.location.href, { replace: true });
-			}
+				return _awaitIgnored(_this3.route(window.location.href, { replace: true }));
+			})
 		}, {
 			key: 'scroll',
-			value: function scroll(x, y) {
+			value: _async(function (x, y) {
 				window.scroll(x, y);
-			}
+			})
 		}, {
 			key: 'back',
-			value: function back() {
+			value: _async(function () {
 				window.history.back();
-			}
+			})
 		}, {
 			key: 'forward',
-			value: function forward() {
+			value: _async(function () {
 				window.history.forward();
-			}
+			})
 		}, {
 			key: 'redirect',
-			value: function redirect(path) {
+			value: _async(function (path) {
 				window.location.href = path;
-			}
+			})
 		}, {
 			key: 'add',
-			value: function add(data) {
-				if (!data) {
-					throw new Error('Oxe.router.add - requires data parameter');
-				} else if (data.constructor === Object) {
-					if (!data.path) throw new Error('Oxe.router.add - route path required');
-					if (!data.component) throw new Error('Oxe.router.add - route component required');
-					this.data.push(data);
-				} else if (data.constructor === Array) {
-					for (var i = 0, l = data.length; i < l; i++) {
-						this.add(data[i]);
-					}
-				}
-			}
+			value: _async(function (data) {
+				var _this4 = this;
+
+				return function () {
+					if (!data) {
+						throw new Error('Oxe.router.add - requires data parameter');
+					} else return function () {
+							if (data.constructor === Object) {
+								if (!data.path) throw new Error('Oxe.router.add - route path required');
+								if (!data.component) throw new Error('Oxe.router.add - route component required');
+								_this4.data.push(data);
+							} else return _invokeIgnored(function () {
+									if (data.constructor === Array) {
+										var i = 0,
+										    l = data.length;return _continueIgnored(_for(function () {
+											return i < l;
+										}, function () {
+											return i++;
+										}, function () {
+											return _awaitIgnored(_this4.add(data[i]));
+										}));
+									}
+								});
+						}();
+				}();
+			})
 		}, {
 			key: 'remove',
-			value: function remove(path) {
-				for (var i = 0, l = this.data.length; i < l; i++) {
-					if (path === this.data[i].path) {
-						this.data.splice(i, 1);
-					}
-				}
-			}
+			value: _async(function (path) {
+				var _this5 = this;
+
+				var i = 0,
+				    l = _this5.data.length;return _continueIgnored(_for(function () {
+					return i < l;
+				}, function () {
+					return i++;
+				}, function () {
+					return _invokeIgnored(function () {
+						if (path === _this5.data[i].path) {
+							return _awaitIgnored(_this5.data.splice(i, 1));
+						}
+					});
+				}));
+			})
 		}, {
 			key: 'get',
-			value: function get(path) {
-				for (var i = 0, l = this.data.length; i < l; i++) {
-					var route = this.data[i];
+			value: _async(function (path) {
+				var _this6 = this;
+
+				for (var i = 0, l = _this6.data.length; i < l; i++) {
+					var route = _this6.data[i];
 					if (path === route.path) {
 						return route;
 					}
 				}
-			}
+			})
 		}, {
 			key: 'find',
-			value: function find(path) {
-				for (var i = 0, l = this.data.length; i < l; i++) {
-					var route = this.data[i];
-					if (this.isPath(route.path, path)) {
+			value: _async(function (path) {
+				var _this7 = this;
+
+				for (var i = 0, l = _this7.data.length; i < l; i++) {
+					var route = _this7.data[i];
+					if (_this7.isPath(route.path, path)) {
 						return route;
 					}
 				}
-			}
+			})
 		}, {
 			key: 'filter',
-			value: function filter(path) {
+			value: _async(function (path) {
+				var _this8 = this;
+
 				var result = [];
 
-				for (var i = 0, l = this.data.length; i < l; i++) {
-					var route = this.data[i];
-					if (this.isPath(route.path, path)) {
+				for (var i = 0, l = _this8.data.length; i < l; i++) {
+					var route = _this8.data[i];
+					if (_this8.isPath(route.path, path)) {
 						result.push(route);
 					}
 				}
 
 				return result;
-			}
+			})
 		}, {
 			key: 'isPath',
-			value: function isPath(routePath, userPath) {
+			value: _async(function (routePath, userPath) {
 
 				if (routePath.slice(0, 1) !== '/') {
 					routePath = Path.resolve(routePath);
@@ -1238,10 +1414,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				} else if (userPath.constructor.name === 'RegExp') {
 					return userPath.test(routePath);
 				}
-			}
+			})
 		}, {
 			key: 'toParameterObject',
-			value: function toParameterObject(routePath, userPath) {
+			value: _async(function (routePath, userPath) {
 				var result = {};
 
 				if (!routePath || !userPath || routePath === '/' || userPath === '/') return result;
@@ -1260,10 +1436,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}
 
 				return result;
-			}
+			})
 		}, {
 			key: 'toQueryString',
-			value: function toQueryString(data) {
+			value: _async(function (data) {
 				var result = '?';
 
 				for (var key in data) {
@@ -1276,10 +1452,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}
 
 				return result;
-			}
+			})
 		}, {
 			key: 'toQueryObject',
-			value: function toQueryObject(path) {
+			value: _async(function (path) {
 				var result = {};
 
 				if (path.indexOf('?') === 0) path = path.slice(1);
@@ -1294,10 +1470,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}
 
 				return result;
-			}
+			})
 		}, {
 			key: 'toLocationObject',
-			value: function toLocationObject() {
+			value: _async(function () {
 				return {
 					port: window.location.port || '',
 					host: window.location.host || '',
@@ -1311,10 +1487,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					username: window.location.username || '',
 					password: window.location.password || ''
 				};
-			}
+			})
 		}, {
 			key: 'render',
-			value: function render(route) {
+			value: _async(function (route) {
+				var _this9 = this;
+
 				Global.utility.ready(function () {
 
 					this.emit('routing');
@@ -1388,8 +1566,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 					this.scroll(0, 0);
 					this.emit('routed');
-				}.bind(this));
-			}
+				}.bind(_this9));
+			})
 		}, {
 			key: 'route',
 			value: function route(path, options) {
@@ -1675,15 +1853,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		function Loader() {
 			_classCallCheck(this, Loader);
 
-			var _this3 = _possibleConstructorReturn(this, (Loader.__proto__ || Object.getPrototypeOf(Loader)).call(this));
+			var _this10 = _possibleConstructorReturn(this, (Loader.__proto__ || Object.getPrototypeOf(Loader)).call(this));
 
-			_this3.data = {};
-			_this3.ran = false;
-			_this3.methods = {};
-			_this3.transformers = {};
+			_this10.data = {};
+			_this10.ran = false;
+			_this10.methods = {};
+			_this10.transformers = {};
 
-			document.addEventListener('load', _this3.listener.bind(_this3), true);
-			return _this3;
+			document.addEventListener('load', _this10.listener.bind(_this10), true);
+			return _this10;
 		}
 
 		_createClass(Loader, [{
@@ -2153,14 +2331,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 				if (opt.cache) {
 					opt.element.removeEventListener(opt.names[1], function (e) {
-						Wraper(opt.cache.bind(null, e));
+						Wraper$1(opt.cache.bind(null, e));
 					});
 				} else {
 					opt.cache = data.bind(opt.container);
 				}
 
 				opt.element.addEventListener(opt.names[1], function (e) {
-					Wraper(opt.cache.bind(null, e));
+					Wraper$1(opt.cache.bind(null, e));
 				});
 			});
 		},
@@ -3090,14 +3268,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 					value: function value(key, _value) {
 						// if (key !== undefined && value !== undefined) {
 						if (_value !== this[key]) {
-							var result = self.create(_value, this.$meta.listener, this.$meta.path + key);
+							var _result3 = self.create(_value, this.$meta.listener, this.$meta.path + key);
 
-							this.$meta[key] = result;
+							this.$meta[key] = _result3;
 							self.defineProperty(this, key);
 
-							this.$meta.listener(result, this.$meta.path + key, key);
+							this.$meta.listener(_result3, this.$meta.path + key, key);
 
-							return result;
+							return _result3;
 						}
 						// } else {
 
@@ -3123,11 +3301,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 							if (this.constructor === Array) {
 								return self.splice.call(this, key, 1);
 							} else {
-								var result = this[key];
+								var _result4 = this[key];
 								delete this.$meta[key];
 								delete this[key];
 								this.$meta.listener(undefined, this.$meta.path + key, key);
-								return result;
+								return _result4;
 							}
 						}
 					}
@@ -3216,15 +3394,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		function Model() {
 			_classCallCheck(this, Model);
 
-			var _this4 = _possibleConstructorReturn(this, (Model.__proto__ || Object.getPrototypeOf(Model)).call(this));
+			var _this11 = _possibleConstructorReturn(this, (Model.__proto__ || Object.getPrototypeOf(Model)).call(this));
 
-			_this4.GET = 2;
-			_this4.SET = 3;
-			_this4.REMOVE = 4;
-			_this4.ran = false;
+			_this11.GET = 2;
+			_this11.SET = 3;
+			_this11.REMOVE = 4;
+			_this11.ran = false;
 
-			_this4.data = Observer.create({}, _this4.listener);
-			return _this4;
+			_this11.data = Observer.create({}, _this11.listener);
+			return _this11;
 		}
 
 		_createClass(Model, [{
@@ -3356,46 +3534,48 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		setup: {
 			enumerable: true,
 			value: function value(data) {
+				Global.utility.ready(function () {
 
-				if (this._setup) {
-					return;
-				} else {
-					this._setup = true;
-				}
+					if (this._setup) {
+						return;
+					} else {
+						this._setup = true;
+					}
 
-				data = data || {};
+					data = data || {};
 
-				if (data.listener && data.listener.before) {
-					data.listener.before();
-				}
+					if (data.listener && data.listener.before) {
+						data.listener.before();
+					}
 
-				if (data.general) {
-					this.general.setup(data.general);
-				}
+					if (data.general) {
+						this.general.setup(data.general);
+					}
 
-				if (data.keeper) {
-					this.keeper.setup(data.keeper);
-				}
+					if (data.keeper) {
+						this.keeper.setup(data.keeper);
+					}
 
-				if (data.fetcher) {
-					this.fetcher.setup(data.fetcher);
-				}
+					if (data.fetcher) {
+						this.fetcher.setup(data.fetcher);
+					}
 
-				if (data.loader) {
-					this.loader.setup(data.loader);
-				}
+					if (data.loader) {
+						this.loader.setup(data.loader);
+					}
 
-				if (data.component) {
-					this.component.setup(data.component);
-				}
+					if (data.component) {
+						this.component.setup(data.component);
+					}
 
-				if (data.router) {
-					this.router.setup(data.router);
-				}
+					if (data.router) {
+						this.router.setup(data.router);
+					}
 
-				if (data.listener && data.listener.after) {
-					data.listener.after();
-				}
+					if (data.listener && data.listener.after) {
+						data.listener.after();
+					}
+				});
 			}
 		}
 	});
@@ -3543,7 +3723,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 				}
 			};
 
-			Wraper(method.bind(eScope, data, e), done);
+			Wraper$1(method.bind(eScope, data, e), done);
 		}, true);
 
 		document.addEventListener('input', function (e) {

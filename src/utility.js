@@ -221,16 +221,21 @@ export default {
 	// 	// console.warn('Oxe.utility - could not find container scope');
 	// },
 
+	// ready () {
+	// 	return new Promise(function (resolve) {
+	// 		if (window.document.readyState !== 'interactive' && window.document.readyState !== 'complete') {
+	// 			window.document.addEventListener('DOMContentLoaded', resolve, true);
+	// 		} else {
+	// 			resolve();
+	// 		}
+	// 	});
+	// }
 	ready (callback) {
-		if (callback) {
-			if (window.document.readyState !== 'interactive' && window.document.readyState !== 'complete') {
-				window.document.addEventListener('DOMContentLoaded', function _ () {
-					callback();
-					window.document.removeEventListener('DOMContentLoaded', _);
-				}, true);
-			} else {
-				callback();
-			}
+		callback = Wraper(callback);
+		if (window.document.readyState !== 'interactive' && window.document.readyState !== 'complete') {
+			window.document.addEventListener('DOMContentLoaded', callback, true);
+		} else {
+			callback();
 		}
 	}
 

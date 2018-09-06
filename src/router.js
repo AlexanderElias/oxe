@@ -21,7 +21,7 @@ export default class Router extends Events {
 		window.addEventListener('popstate', this.stateListener.bind(this), true);
 	}
 
-	setup (options) {
+	async setup (options) {
 		options = options || {};
 
 		this.auth = options.auth === undefined ? this.auth : options.auth;
@@ -33,26 +33,26 @@ export default class Router extends Events {
 			this.add(options.routes);
 		}
 
-		this.route(window.location.href, { replace: true });
+		await this.route(window.location.href, { replace: true });
 	}
 
-	scroll (x, y) {
+	async scroll (x, y) {
 		window.scroll(x, y);
 	}
 
-	back () {
+	async back () {
 		window.history.back();
 	}
 
-	forward () {
+	async forward () {
 		window.history.forward();
 	}
 
-	redirect (path) {
+	async redirect (path) {
 		window.location.href = path;
 	}
 
-	add (data) {
+	async add (data) {
 		if (!data) {
 			throw new Error('Oxe.router.add - requires data parameter');
 		} else if (data.constructor === Object) {
@@ -61,20 +61,20 @@ export default class Router extends Events {
 			this.data.push(data);
 		} else if (data.constructor === Array) {
 			for (var i = 0, l = data.length; i < l; i++) {
-				this.add(data[i]);
+				await this.add(data[i]);
 			}
 		}
 	}
 
-	remove (path) {
+	async remove (path) {
 		for (var i = 0, l = this.data.length; i < l; i++) {
 			if (path === this.data[i].path) {
-				this.data.splice(i, 1);
+				await this.data.splice(i, 1);
 			}
 		}
 	}
 
-	get (path) {
+	async get (path) {
 		for (var i = 0, l = this.data.length; i < l; i++) {
 			var route = this.data[i];
 			if (path === route.path) {
@@ -83,7 +83,7 @@ export default class Router extends Events {
 		}
 	}
 
-	find (path) {
+	async find (path) {
 		for (var i = 0, l = this.data.length; i < l; i++) {
 			var route = this.data[i];
 			if (this.isPath(route.path, path)) {
@@ -92,7 +92,7 @@ export default class Router extends Events {
 		}
 	}
 
-	filter (path) {
+	async filter (path) {
 		var result = [];
 
 		for (var i = 0, l = this.data.length; i < l; i++) {
@@ -105,7 +105,7 @@ export default class Router extends Events {
 		return result;
 	}
 
-	isPath (routePath, userPath) {
+	async isPath (routePath, userPath) {
 
 		if (routePath.slice(0, 1) !== '/') {
 			routePath = Path.resolve(routePath);
@@ -125,7 +125,7 @@ export default class Router extends Events {
 		}
 	}
 
-	toParameterObject (routePath, userPath) {
+	async toParameterObject (routePath, userPath) {
 		var result = {};
 
 		if (
@@ -152,7 +152,7 @@ export default class Router extends Events {
 		return result;
 	}
 
-	toQueryString (data) {
+	async toQueryString (data) {
 		var result = '?';
 
 		for (var key in data) {
@@ -167,7 +167,7 @@ export default class Router extends Events {
 		return result;
 	}
 
-	toQueryObject (path) {
+	async toQueryObject (path) {
 		var result = {};
 
 		if (path.indexOf('?') === 0) path = path.slice(1);
@@ -185,7 +185,7 @@ export default class Router extends Events {
 		return result;
 	}
 
-	toLocationObject () {
+	async toLocationObject () {
 		return {
 			port: window.location.port || '',
 			host: window.location.host || '',
@@ -201,7 +201,7 @@ export default class Router extends Events {
 		};
 	}
 
-	render (route) {
+	async render (route) {
 		Global.utility.ready(function () {
 
 			this.emit('routing');

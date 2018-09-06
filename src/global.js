@@ -73,47 +73,49 @@ Object.defineProperties(Global, {
 	setup: {
 		enumerable: true,
 		value: function (data) {
+			Global.utility.ready(function () {
 
-			if (this._setup) {
-				return;
-			} else {
-				this._setup = true;
-			}
+				if (this._setup) {
+					return;
+				} else {
+					this._setup = true;
+				}
 
-			data = data || {};
+				data = data || {};
 
-			if (data.listener && data.listener.before) {
-				data.listener.before();
-			}
+				if (data.listener && data.listener.before) {
+					data.listener.before();
+				}
 
-			if (data.general) {
-				this.general.setup(data.general);
-			}
+				if (data.general) {
+					this.general.setup(data.general);
+				}
 
-			if (data.keeper) {
-				this.keeper.setup(data.keeper);
-			}
+				if (data.keeper) {
+					this.keeper.setup(data.keeper);
+				}
 
-			if (data.fetcher) {
-				this.fetcher.setup(data.fetcher);
-			}
+				if (data.fetcher) {
+					this.fetcher.setup(data.fetcher);
+				}
 
-			if (data.loader) {
-				this.loader.setup(data.loader);
-			}
+				if (data.loader) {
+					this.loader.setup(data.loader);
+				}
 
-			if (data.component) {
-				this.component.setup(data.component);
-			}
+				if (data.component) {
+					this.component.setup(data.component);
+				}
 
-			if (data.router) {
-				this.router.setup(data.router);
-			}
+				if (data.router) {
+					this.router.setup(data.router);
+				}
 
-			if (data.listener && data.listener.after) {
-				data.listener.after();
-			}
+				if (data.listener && data.listener.after) {
+					data.listener.after();
+				}
 
+			});
 		}
 	}
 });
