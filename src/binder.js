@@ -1,8 +1,9 @@
-import Unrender from './lib/unrender.js';
-import Render from './lib/render.js';
-import Global from './global.js';
+import Unrender from './unrender.js';
+import Utility from './utility.js';
+import Methods from './methods.js';
+import Render from './render.js';
 
-export default class Binder {
+class Binder {
 
 	constructor () {
 		this.data = {};
@@ -31,12 +32,12 @@ export default class Binder {
 
 		opt.scope = opt.scope || opt.container.getAttribute('o-scope');
 		// opt.value = opt.value || opt.element.getAttribute(opt.name);
-		opt.path = opt.path || Global.utility.binderPath(opt.value);
+		opt.path = opt.path || Utility.binderPath(opt.value);
 
-		opt.type = opt.type || Global.utility.binderType(opt.name);
-		opt.names = opt.names || Global.utility.binderNames(opt.name);
-		opt.values = opt.values || Global.utility.binderValues(opt.value);
-		opt.modifiers = opt.modifiers || Global.utility.binderModifiers(opt.value);
+		opt.type = opt.type || Utility.binderType(opt.name);
+		opt.names = opt.names || Utility.binderNames(opt.name);
+		opt.values = opt.values || Utility.binderValues(opt.value);
+		opt.modifiers = opt.modifiers || Utility.binderModifiers(opt.value);
 
 		opt.keys = opt.keys || [opt.scope].concat(opt.values);
 
@@ -178,12 +179,12 @@ export default class Binder {
 			return data;
 		}
 
-		if (!Global.methods.data[opt.scope]) {
+		if (!Methods.data[opt.scope]) {
 			return data;
 		}
 
 		for (var modifier of opt.modifiers) {
-			var scope = Global.methods.data[opt.scope];
+			var scope = Methods.data[opt.scope];
 
 			if (scope) {
 				data = scope[modifier].call(opt.container, data);
@@ -271,7 +272,7 @@ export default class Binder {
 					name: attribute.name,
 					value: attribute.value,
 					scope: scope.getAttribute('o-scope'),
-					path: Global.utility.binderPath(attribute.value)
+					path: Utility.binderPath(attribute.value)
 				});
 
 				this.remove(binder);
@@ -302,3 +303,5 @@ export default class Binder {
 	}
 
 }
+
+export default new Binder();

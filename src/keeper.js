@@ -1,6 +1,6 @@
-import Global from './global.js';
+import Router from './router.js';
 
-export default class Keeper {
+class Keeper {
 
 	constructor (options) {
 
@@ -72,7 +72,7 @@ export default class Keeper {
 		this.setUser(user);
 
 		if (typeof this._authenticated === 'string') {
-			Global.router.route(this._authenticated);
+			Router.route(this._authenticated);
 		} else if (typeof this._authenticated === 'function') {
 			this._authenticated();
 		}
@@ -84,7 +84,7 @@ export default class Keeper {
 		this.removeUser();
 
 		if (typeof this._unauthenticated === 'string') {
-			Global.router.route(this._unauthenticated);
+			Router.route(this._unauthenticated);
 		} else if (typeof this._unauthenticated === 'function') {
 			this._unauthenticated();
 		}
@@ -94,7 +94,7 @@ export default class Keeper {
 	forbidden (result) {
 
 		if (typeof this._forbidden === 'string') {
-			Global.router.route(this._forbidden);
+			Router.route(this._forbidden);
 		} else if (typeof this._forbidden === 'function') {
 			this._forbidden(result);
 		}
@@ -108,7 +108,7 @@ export default class Keeper {
 		// this.removeUser();
 
 		if (typeof this._unauthorized === 'string') {
-			Global.router.route(this._unauthorized);
+			Router.route(this._unauthorized);
 		} else if (typeof this._unauthorized === 'function') {
 			this._unauthorized(result);
 		}
@@ -170,6 +170,8 @@ export default class Keeper {
 	}
 
 }
+
+export default new Keeper();
 
 /*
 	https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding

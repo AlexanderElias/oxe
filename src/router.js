@@ -1,8 +1,11 @@
-import Events from './lib/events.js';
-import Path from './lib/path.js';
-import Global from './global.js';
+import Component from './component.js';
+import Utility from './utility.js';
+import Events from './events.js';
+import Loader from './loader.js';
+import Keeper from './keeper.js';
+import Path from './path.js';
 
-export default class Router extends Events {
+class Router extends Events {
 
 	constructor () {
 		super();
@@ -202,7 +205,7 @@ export default class Router extends Events {
 	}
 
 	async render (route) {
-		Global.utility.ready(function () {
+		Utility.ready(function () {
 
 			this.emit('routing');
 
@@ -211,7 +214,7 @@ export default class Router extends Events {
 			}
 
 			if (route.description) {
-				Global.utility.ensureElement({
+				Utility.ensureElement({
 					name: 'meta',
 					scope: document.head,
 					position: 'afterbegin',
@@ -224,7 +227,7 @@ export default class Router extends Events {
 			}
 
 			if (route.keywords) {
-				Global.utility.ensureElement({
+				Utility.ensureElement({
 					name: 'meta',
 					scope: document.head,
 					position: 'afterbegin',
@@ -252,7 +255,7 @@ export default class Router extends Events {
 			if (!route.element) {
 
 				if (route.load) {
-					Global.loader.load(route.load);
+					Loader.load(route.load);
 				}
 
 				if (!route.component) {
@@ -261,7 +264,7 @@ export default class Router extends Events {
 					route.element = document.createElement(route.component);
 				} else if (route.component.constructor.name === 'Object') {
 
-					Global.component.define(route.component);
+					Component.define(route.component);
 
 					if (this.compiled) {
 						route.element = this.element.firstChild;
@@ -315,7 +318,7 @@ export default class Router extends Events {
 
 		if (this.auth && (this.location.route.auth === true || this.location.route.auth === undefined)) {
 
-			if (Global.keeper.route(this.location.route) === false) {
+			if (Keeper.route(this.location.route) === false) {
 				return;
 			}
 
@@ -403,3 +406,5 @@ export default class Router extends Events {
 	}
 
 }
+
+export default new Router();

@@ -1,8 +1,8 @@
-import Observer from './lib/observer.js';
-import Events from './lib/events.js';
-import Global from './global.js';
+import Observer from './observer.js';
+import Events from './events.js';
+import Binder from './binder.js';
 
-export default class Model extends Events {
+class Model extends Events {
 
 	constructor () {
 		super();
@@ -66,9 +66,11 @@ export default class Model extends Events {
 
 	listener (data, path) {
 		var type = data === undefined ? 'unrender' : 'render';
-		Global.binder.each(path, function (binder) {
-			Global.binder[type](binder);
+		Binder.each(path, function (binder) {
+			Binder[type](binder);
 		});
 	}
 
 }
+
+export default new Model();

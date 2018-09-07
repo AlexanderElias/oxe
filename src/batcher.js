@@ -1,4 +1,4 @@
-import Events from './lib/events.js';
+import Events from './events.js';
 
 class Batcher extends Events {
 
@@ -105,4 +105,4 @@ class Batcher extends Events {
 
 }
 
-export default Batcher;
+export default new Batcher();

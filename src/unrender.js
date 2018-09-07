@@ -1,15 +1,15 @@
-import Global from '../global';
+import Batcher from './batcher.js';
 
 export default {
 
 	alt (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			opt.element.alt = '';
 		});
 	},
 
 	each (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			var element;
 
 			while (element = opt.element.lastElementChild) {
@@ -19,20 +19,20 @@ export default {
 	},
 
 	href (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			opt.element.href = '';
 		});
 	},
 
 	class (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			var className = opt.names.slice(1).join('-');
 			opt.element.classList.remove(className);
 		});
 	},
 
 	html (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			var element;
 
 			while (element = opt.element.lastElementChild) {
@@ -46,31 +46,31 @@ export default {
 	},
 
 	css (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			opt.element.style.cssText = '';
 		});
 	},
 
 	required (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			opt.element.required = false;
 		});
 	},
 
 	src (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			opt.element.src = '';
 		});
 	},
 
 	text (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			opt.element.innerText = '';
 		});
 	},
 
 	value (opt) {
-		Global.batcher.write(function () {
+		Batcher.write(function () {
 			var i , l, query, element, elements;
 
 			if (opt.element.nodeName === 'SELECT') {

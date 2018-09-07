@@ -1,6 +1,6 @@
-import Path from './lib/path.js';
+import Path from './path.js';
 
-export default class General {
+class General {
 
 	constructor (options) {
 		this.setup(options);
@@ -16,3 +16,5 @@ export default class General {
 	}
 
 }
+
+export default new General();

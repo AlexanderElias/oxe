@@ -1,9 +1,8 @@
-import Transformer from './lib/transformer.js';
-import Events from './lib/events.js';
-import Path from './lib/path.js';
-import Global from './global.js';
+import Transformer from './transformer.js';
+import Events from './events.js';
+import Path from './path.js';
 
-export default class Loader extends Events {
+class Loader extends Events {
 
 	constructor () {
 		super();
@@ -243,6 +242,8 @@ export default class Loader extends Events {
 	}
 
 }
+
+export default new Loader();
 
 /*
 	https://www.nczonline.net/blog/2013/06/25/eval-isnt-evil-just-misunderstood/

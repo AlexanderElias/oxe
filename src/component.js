@@ -1,6 +1,8 @@
-import Global from './global.js';
+import Methods from './methods.js';
+import Binder from './binder.js';
+import Model from './model.js';
 
-export default class Component {
+class Component {
 
 	constructor (options) {
 		this.data = {};
@@ -125,8 +127,8 @@ export default class Component {
 
 		element.setAttribute('o-scope', scope);
 
-		Global.model.set(scope, options.model || {});
-		Global.methods.data[scope] = options.methods;
+		Model.set(scope, options.model || {});
+		Methods.data[scope] = options.methods;
 
 		if (!self.compiled || (self.compiled && element.parentNode.nodeName !== 'O-ROUTER')) {
 			var eTemplate = self.renderTemplate(options.template);
@@ -147,7 +149,7 @@ export default class Component {
 
 		}
 
-		Global.binder.bind(element);
+		Binder.bind(element);
 
 		if (options.created) {
 			options.created.call(element);
@@ -156,7 +158,7 @@ export default class Component {
 	}
 
 	attached (element, options) {
-		// Global.binder.bind(element);
+		// Binder.bind(element);
 
 		if (options.attached) {
 			options.attached.call(element);
@@ -164,7 +166,7 @@ export default class Component {
 	}
 
 	detached (element, options) {
-		// Global.binder.unbind(element);
+		// Binder.unbind(element);
 
 		if (options.detached) {
 			options.detached.call(element);
@@ -201,18 +203,18 @@ export default class Component {
 			enumerable: true,
 			configurable: true,
 			get: function () {
-				return Global.model.get(this.scope);
+				return Model.get(this.scope);
 			},
 			set: function (data) {
 				data = data && typeof data === 'object' ? data : {};
-				return Global.model.set(this.scope, data);
+				return Model.set(this.scope, data);
 			}
 		};
 
 		options.properties.methods = {
 			enumerable: true,
 			get: function () {
-				return Global.methods.data[this.scope];
+				return Methods.data[this.scope];
 			}
 		};
 
@@ -239,3 +241,5 @@ export default class Component {
 	}
 
 }
+
+export default new Component();

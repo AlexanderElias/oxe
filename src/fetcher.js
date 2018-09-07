@@ -1,7 +1,7 @@
-import Global from './global.js';
+import Keeper from './Keeper.js';
 import Wraper from './wraper.js';
 
-export default class Fetcher {
+class Fetcher {
 
 	constructor (options) {
 
@@ -65,7 +65,7 @@ export default class Fetcher {
 
 			if (opt.xhr.status === 401 || opt.xhr.status === 403) {
 				if (opt.auth) {
-					if (Global.keeper.response && Global.keeper.response(opt) === false) {
+					if (Keeper.response && Keeper.response(opt) === false) {
 						return;
 					}
 				}
@@ -173,7 +173,7 @@ export default class Fetcher {
 		}
 
 		if (opt.auth) {
-			if (Global.keeper.request && Global.keeper.request(opt) === false) {
+			if (Keeper.request && Keeper.request(opt) === false) {
 				return;
 			}
 		}
@@ -248,3 +248,5 @@ export default class Fetcher {
 	}
 
 }
+
+export default new Fetcher();
