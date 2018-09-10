@@ -6,7 +6,7 @@ class General {
 		this.setup(options);
 	}
 
-	setup (options) {
+	async setup (options) {
 		options = options || {};
 
 		if (options.base) {

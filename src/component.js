@@ -9,13 +9,11 @@ class Component {
 		this.setup(options);
 	}
 
-	setup (options) {
+	async setup (options) {
 		options = options || {};
 
 		if (options.components) {
-			for (var component of options.components) {
-				this.define(component);
-			}
+			return Promise.all(options.components.map(this.define);
 		}
 
 	}
@@ -173,8 +171,8 @@ class Component {
 		}
 	}
 
-	define (options) {
-		var self = this;
+	async define (options) {
+		const self = this;
 
 		if (!options.name) {
 			throw new Error('Oxe.component.define - requires name');

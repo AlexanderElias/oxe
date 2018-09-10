@@ -2,32 +2,22 @@ import Router from './router.js';
 
 class Keeper {
 
-	constructor (options) {
+	get token () {
+		return this._token = this._token || window[this.type].getItem('token');
+	}
 
-		this._user;
-		this._token;
+	get user () {
+		return this._user = this._user || JSON.parse(window[this.type].getItem('user'));
+	}
+
+	constructor (options) {
 		this.scheme = 'Session';
 		this.type = 'sessionStorage';
-
-		Object.defineProperties(this, {
-			token: {
-				enumerable: true,
-				get: function () {
-					return this._token = this._token || window[this.type].getItem('token');
-				}
-			},
-			user: {
-				enumerable: true,
-				get: function () {
-					return this._user = this._user || JSON.parse(window[this.type].getItem('user'));
-				}
-			}
-		});
 
 		this.setup(options);
 	}
 
-	setup (options) {
+	async setup (options) {
 		options = options || {};
 
 		this._forbidden = options.forbidden || this._forbidden;

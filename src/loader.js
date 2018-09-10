@@ -15,7 +15,7 @@ class Loader extends Events {
 		document.addEventListener('load', this.listener.bind(this), true);
 	}
 
-	setup (options) {
+	async setup (options) {
 		options = options || {};
 
 		this.methods = options.methods || this.methods;

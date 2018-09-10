@@ -124,47 +124,48 @@ const Oxe = Object.defineProperties({}, {
 				self.isSetup = true;
 			}
 
-			Utility.ready(async function () {
-				data = data || {};
 
-				if (data.listener && data.listener.before) {
-					await data.listener.before();
-				}
+			data = data || {};
 
-				document.addEventListener('reset', Reset, true);
-				document.addEventListener('input', Input, true);
-				document.addEventListener('submit', Submit, true);
-				document.addEventListener('change', Change, true);
+			// might want to add DOMContentLoaded
 
-				if (data.general) {
-					await self.general.setup(data.general);
-				}
+			if (data.listener && data.listener.before) {
+				await data.listener.before();
+			}
 
-				if (data.keeper) {
-					await self.keeper.setup(data.keeper);
-				}
+			document.addEventListener('reset', Reset, true);
+			document.addEventListener('input', Input, true);
+			document.addEventListener('submit', Submit, true);
+			document.addEventListener('change', Change, true);
 
-				if (data.fetcher) {
-					await self.fetcher.setup(data.fetcher);
-				}
+			if (data.general) {
+				await self.general.setup(data.general);
+			}
 
-				if (data.loader) {
-					await self.loader.setup(data.loader);
-				}
+			if (data.keeper) {
+				await self.keeper.setup(data.keeper);
+			}
 
-				if (data.component) {
-					await self.component.setup(data.component);
-				}
+			if (data.fetcher) {
+				await self.fetcher.setup(data.fetcher);
+			}
 
-				if (data.router) {
-					await self.router.setup(data.router);
-				}
+			if (data.loader) {
+				await self.loader.setup(data.loader);
+			}
 
-				if (data.listener && data.listener.after) {
-					await data.listener.after();
-				}
+			if (data.component) {
+				await self.component.setup(data.component);
+			}
 
-			});
+			if (data.router) {
+				await self.router.setup(data.router);
+			}
+
+			if (data.listener && data.listener.after) {
+				await data.listener.after();
+			}
+
 		}
 	}
 });

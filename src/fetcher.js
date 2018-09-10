@@ -16,7 +16,7 @@ class Fetcher {
 		this.setup(options);
 	}
 
-	setup (options) {
+	async setup (options) {
 		options = options || {};
 		this.auth = options.auth || false;
 		this.method = options.method || 'get';
