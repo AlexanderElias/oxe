@@ -105,6 +105,22 @@ export default {
         if (data.target === undefined) throw new Error('Oxe.binder.create - missing target');
         if (data.container === undefined) throw new Error('Oxe.binder.create - missing container');
 
+        let expressionString = '';
+        const expressionValues = [];
+        const expressionNames = data.value.match(/[^0-9.+=?&(){}|:\-\s][a-z$_0-9]+/gi);
+
+        for (let i = 0, l = expressionNames.length; i < l; i++) {
+            const expressionName = expressionNames[i];
+            if (/^[0-9]/.test(expressionName)) continue;
+            if (expressionName in data.container.model === false) continue;
+            expressionString += `${expressionName},`;
+            Object.defineProperty(expressionValues, i, {
+                get: function (name) {
+                    return data.container.model[name];
+                }.bind(null, expressionName)
+            });
+        }
+
         // const originalValue = data.value;
 
         if (data.value.slice(0, 2) === '{{' && data.value.slice(-2) === '}}') {
@@ -155,13 +171,16 @@ export default {
             // get originalValue () { return originalValue; },
 
             get data() {
-                const data = Utility.getByPath(source, values);
-                return Piper(this, data);
+                // const data = Utility.getByPath(source, values);
+                // return Piper(this, data);
+                const expression = new Function(expressionString, '"use strict"; return ' + data.value);
+                const result = expression.apply(null, expressionValues);
+                return result;
             },
 
             set data(value) {
-                const data = Piper(this, value);
-                return Utility.setByPath(source, values, data);
+                // const data = Piper(this, value);
+                // return Utility.setByPath(source, values, data);
             }
 
         };

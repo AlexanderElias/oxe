@@ -27,6 +27,7 @@ Oxe.setup({
         routes: [
             'index',
             'test',
+            'examples/expressions',
             'binders/each',
             'binders/class',
             'binders/select',

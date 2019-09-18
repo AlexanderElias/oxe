@@ -7,6 +7,21 @@ export default {
     component: {
         name: 'r-test',
         model: {
+            s0: null,
+            nah: null,
+            isshow: null,
+            ishide: null,
+            toggleShowHide: null,
+
+            lower: function (text) {
+                text = text || '';
+                return text.toLowerCase();
+            },
+            upper: function (text) {
+                text = text || '';
+                return text.toUpperCase();
+            },
+
             title: 'Test',
             menuItemOne: 'Item One',
             submit: 'hello world',
@@ -40,18 +55,7 @@ export default {
             submit: function (data) {
                 console.log(data);
             },
-            mod: function () {
-                console.log('here');
-                console.log(arguments);
-            },
-            lower: function (text) {
-                text = text || '';
-                return text.toLowerCase();
-            },
-            upper: function (text) {
-                text = text || '';
-                return text.toUpperCase();
-            },
+
             overwriteArray: function () {
                 this.model.arrayChange = [ 3, 4, 5, 6 ];
             },
