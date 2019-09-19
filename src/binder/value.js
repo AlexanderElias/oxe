@@ -192,12 +192,13 @@ export default function (binder, caller) {
             // binder.meta.busy = false;
             // }
         };
+    // } else if (type === 'number') {
     } else {
         return {
             read() {
 
                 if (caller === 'view') {
-                    binder.data = binder.target.value;
+                    binder.data = type === 'number' ? +binder.target.value : binder.target.value;
                     binder.meta.busy = false;
                     return false;
                 }

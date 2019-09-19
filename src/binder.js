@@ -20,6 +20,8 @@ import Text from './binder/text.js';
 import Value from './binder/value.js';
 import Write from './binder/write.js';
 
+import Parse from './utility/parse.js';
+
 const DATA = new Map();
 
 const BINDERS = {
@@ -105,32 +107,14 @@ export default {
         if (data.target === undefined) throw new Error('Oxe.binder.create - missing target');
         if (data.container === undefined) throw new Error('Oxe.binder.create - missing container');
 
-        let expressionString = '';
-        const expressionValues = [];
-        const expressionNames = data.value.match(/[^0-9.+=?&(){}|:\-\s][a-z$_0-9]+/gi);
-
-        for (let i = 0, l = expressionNames.length; i < l; i++) {
-            const expressionName = expressionNames[i];
-            if (/^[0-9]/.test(expressionName)) continue;
-            if (expressionName in data.container.model === false) continue;
-            expressionString += `${expressionName},`;
-            Object.defineProperty(expressionValues, i, {
-                get: function (name) {
-                    return data.container.model[name];
-                }.bind(null, expressionName)
-            });
-        }
-
-        // const originalValue = data.value;
-
         if (data.value.slice(0, 2) === '{{' && data.value.slice(-2) === '}}') {
             data.value = data.value.slice(2, -2);
         }
-
-        if (data.value.indexOf('$') !== -1 && data.context && data.context.variable && data.context.path && data.context.key) {
-            const pattern = new RegExp(`\\$${data.context.variable}(,|\\s+|\\.|\\|)?(.*)?$`, 'ig');
-            data.value = data.value.replace(pattern, `${data.context.path}.${data.context.key}$1$2`);
-        }
+        
+        // if (data.value.indexOf('$') !== -1 && data.context && data.context.variable && data.context.path && data.context.key) {
+        //     const pattern = new RegExp(`\\$${data.context.variable}(,|\\s+|\\.|\\|)?(.*)?$`, 'ig');
+        //     data.value = data.value.replace(pattern, `${data.context.path}.${data.context.key}$1$2`);
+        // }
 
         const scope = data.container.scope;
         const names = data.names || Utility.binderNames(data.name);
@@ -145,6 +129,25 @@ export default {
         const meta = data.meta || {};
         const context = data.context || {};
         const source = type === 'on' || type === 'submit' ? data.container.methods : data.container.model;
+
+        let expressionNames = '';
+        const expressionValues = [];
+        for (let i = 0, l = data.identifiers.length; i < l; i++) {
+            const identifier = data.identifiers[i].split('.')[0];
+            if (identifier in source === false) continue;
+            expressionNames += `${identifier},`;
+            Object.defineProperty(expressionValues, i, {
+                get: function (name) {
+                    return source[name];
+                }.bind(null, identifier),
+                set: function (name, value) {
+                    console.log(name);
+                    console.log(value);
+                    return source[name] = value;
+                }.bind(null, identifier)
+            });
+        }
+        const expression = new Function(expressionNames, `"use strict"; return ${data.value}`);
 
         return {
             get location() { return location; },
@@ -173,14 +176,15 @@ export default {
             get data() {
                 // const data = Utility.getByPath(source, values);
                 // return Piper(this, data);
-                const expression = new Function(expressionString, '"use strict"; return ' + data.value);
-                const result = expression.apply(null, expressionValues);
-                return result;
+                return expression.apply(null, expressionValues);
             },
 
             set data(value) {
-                // const data = Piper(this, value);
-                // return Utility.setByPath(source, values, data);
+                const data = Piper(this, value);
+                return Utility.setByPath(source, values, data);
+                // const setExpression = new Function(`${expressionNames}$VALUE`, `"use strict"; return ${data.value} = $VALUE;`);
+                // console.log(setExpression);
+                // return setExpression.apply(null, expressionValues.concat(value));
             }
 
         };
@@ -212,40 +216,48 @@ export default {
     },
 
     bind(node, name, value, context) {
+        const self = this;
 
-        if (value === `$${context.variable}.$key` || value === `{{$${context.variable}.$key}}`) {
-            return Batcher.batch({ write() { node.textContent = context.key; } });
-        }
+        // if (value === `$${context.variable}.$key` || value === `{{$${context.variable}.$key}}`) {
+        //     return Batcher.batch({ write() { node.textContent = context.key; } });
+        // }
 
-        if (value === `$${context.variable}.$index` || value === `{{$${context.variable}.$index}}`) {
-            return Batcher.batch({ write() { node.textContent = context.index; } });
-        }
+        // if (value === `$${context.variable}.$index` || value === `{{$${context.variable}.$index}}`) {
+        //     return Batcher.batch({ write() { node.textContent = context.index; } });
+        // }
 
-        const binder = this.create({
-            name: name,
-            value: value,
+        const identifiers = Parse(value, 'identifier');
+
+        const binder = self.create({
+            name,
+            value,
+            context,
+            identifiers,
             target: node,
-            context: context,
             container: context.container,
             scope: context.container.scope
         });
 
-        if (!this.data.get('attribute').has(binder.target)) {
-            this.data.get('attribute').set(binder.target, new Map());
+        if (!self.data.get('attribute').has(binder.target)) {
+            self.data.get('attribute').set(binder.target, new Map());
         }
 
-        if (!this.data.get('location').has(binder.scope)) {
-            this.data.get('location').set(binder.scope, new Map());
+        if (!self.data.get('location').has(binder.scope)) {
+            self.data.get('location').set(binder.scope, new Map());
         }
 
-        if (!this.data.get('location').get(binder.scope).has(binder.path)) {
-            this.data.get('location').get(binder.scope).set(binder.path, []);
-        }
+        self.data.get('attribute').get(binder.target).set(binder.name, binder);
 
-        this.data.get('attribute').get(binder.target).set(binder.name, binder);
-        this.data.get('location').get(binder.scope).get(binder.path).push(binder);
+        identifiers.forEach(function (identifier) {
+            
+            if (!self.data.get('location').get(binder.scope).has(identifier)) {
+                self.data.get('location').get(binder.scope).set(identifier, []);
+            }
 
-        this.render(binder);
+            self.data.get('location').get(binder.scope).get(identifier).push(binder);
+        });
+
+        self.render(binder);
         // this.render(binder, 'view');
     },
 
